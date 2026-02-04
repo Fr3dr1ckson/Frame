@@ -191,15 +191,16 @@ void setup() {
   expander1.pinMode1(EXP1_PMIC_EN, OUTPUT);
 
   Serial.println("Setting voltage enable pins HIGH...");
-
-  expander1.write1(EXP1_PMIC_EN, HIGH);
   expander2.write1(EXP2_EN_DC12, HIGH);
   expander2.write1(EXP2_EN_DC19,HIGH);
   expander2.write1(EXP2_EN_V5D,HIGH);
   expander2.write1(EXP2_EN_1_35V,HIGH);
   expander2.write1(EXP2_EN_NEGATIVE_3_5V,HIGH);
   expander1.write1(EXP1_EN_V5A,HIGH);
+
+  delay(3000);
   
+  expander1.write1(EXP1_PMIC_EN, HIGH);
   enablePmic();
 
   delay(2000);
