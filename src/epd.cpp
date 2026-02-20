@@ -585,3 +585,81 @@ void epdWriteImage(unsigned char csx, const unsigned char *imageData, unsigned l
     printf("Writing data is completed.\n");
 #endif
 }
+
+
+unsigned char epdSetPower(void)
+{
+  unsigned char i, vcomStatus=DONE;
+  unsigned char readTscBuf[2],readPwrBuf[5];
+
+  //Read TSC
+  epdSetCs(0,GPIO_LOW);
+  epdRead(EPD_CMD_TSC, &readTscBuf[0], sizeof(readTscBuf));
+  epdCheckBusyHigh();
+  epdSetCs(0,GPIO_HIGH);
+#if SHOW_LOG
+  printf("TSC Data = 0x%02X, 0x%02X \r\n", readTscBuf[0], readTscBuf[1]);
+#endif
+
+  //PON without the external power
+  epdSetCs(0,GPIO_LOW);
+  epdWriteCommand(EPD_CMD_PON);
+  epdCheckBusyHigh();
+  epdSetCs(0,GPIO_HIGH);
+
+  //Read PWR
+  epdSetCs(0,GPIO_LOW);
+  epdRead(0x9B, &readPwrBuf[0], 4);
+  epdSetCs(0,GPIO_HIGH);
+#if SHOW_LOG
+  printf("PWR Data = 0x%02X, 0x%02X 0x%02X, 0x%02X \r\n", readPwrBuf[0], readPwrBuf[1], readPwrBuf[2], readPwrBuf[3]);
+#endif
+
+  //POF
+  epdSetCs(0,GPIO_LOW);
+  epdWriteCommand(EPD_CMD_POF);
+  epdCheckBusyHigh();
+  epdSetCs(0,GPIO_HIGH);
+  
+  //Read VCOM
+  epdSetCs(0,GPIO_LOW);
+  epdRead(0x8A, &readPwrBuf[4], 1);
+  epdSetCs(0,GPIO_HIGH);
+
+
+  if(readPwrBuf[4]== 0x00)
+  {
+#if SHOW_LOG
+  printf("VCOM Data = 0x%02X \r\n", readPwrBuf[4]);  
+  printf("Data NG! \r\n");
+#endif
+    vcomStatus = ERROR;
+  }
+  else
+  {
+    for(i=0;i<4;i++)
+    {
+      if(readPwrBuf[i] > 120)
+      {
+        vcomStatus = ERROR;
+#if SHOW_LOG
+        printf("PWM Data [%d] = 0x%02X \r\n",i , readPwrBuf[4]);  
+        printf("Data NG! \r\n");
+#endif
+      }
+    }
+
+    if(vcomStatus == DONE)
+    {
+      readPwrBuf[4] = readPwrBuf[4] - 128;
+      epdSetPwrToPmic(readPwrBuf);
+#if SHOW_LOG
+      printf("PWM data and VCOM data are both in range! \r\n");
+#endif
+    }
+
+  }
+  
+  return vcomStatus;
+
+}

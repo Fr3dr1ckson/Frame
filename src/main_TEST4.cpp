@@ -326,10 +326,15 @@ void setup()
   printf("\n========== Initializing EPD ==========\n");
   epdInit();
 
+  uint8_t sampleImage[288000]; // 480x600 pixels at 1 bit per pixel = 480*600/8 bytes
+
   // Check driver IC status
   if (epdCheckDriverICStatus() == DONE)
   {
+    if(epdSetPower() == DONE)
     printf("All driver ICs are ready!\n");
+    epdWriteImage(0, sampleImage, sizeof(sampleImage));
+    epdWriteImage(1, sampleImage, sizeof(sampleImage));
   }
   else
   {
