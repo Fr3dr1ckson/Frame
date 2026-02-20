@@ -331,10 +331,11 @@ void setup()
   // Check driver IC status
   if (epdCheckDriverICStatus() == DONE)
   {
-    if(epdSetPower() == DONE)
-    printf("All driver ICs are ready!\n");
-    epdWriteImage(0, sampleImage, sizeof(sampleImage));
-    epdWriteImage(1, sampleImage, sizeof(sampleImage));
+    if(epdSetPower() == DONE){
+      printf("All driver ICs are ready!\n");
+      epdWriteImage(0, sampleImage, sizeof(sampleImage));
+      epdWriteImage(1, sampleImage, sizeof(sampleImage));
+    }
   }
   else
   {
