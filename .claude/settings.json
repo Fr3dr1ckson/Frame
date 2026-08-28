@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"C:\\\\Users\\\\User\\\\Documents\\\\GIT_COPY\\\\LOG_TEXT\\\\\" | sort)",
+      "Read(//c/Users/User/Documents/GIT_COPY/**)"
+    ]
+  }
+}

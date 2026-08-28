@@ -358,7 +358,7 @@ void setup()
   // expander2.pinMode1(EXP2_EN_VIN_SCREEN_3V3, OUTPUT);
   setGpioLevel_EXPANDER_2(EXP2_EN_VIN_SCREEN_3V3, GPIO_HIGH);
   delay(50);
-  setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH);
+  // setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH);// disable for test only
   // Serial.println("-3.5v ON MOSFET");
   // Serial.println("5v");
   delay(1000);
@@ -402,7 +402,7 @@ void setup()
 
   printf("===========================================\n\n");
   // delay(500);
-  // powerSwitchEnable(); // tetst
+  // powerSwitchEnable(); // test
   //  // Initialize EPD GPIO pins
   epd_gpio_init();
 
@@ -461,15 +461,23 @@ void setup()
   // {
   //   printf("WARNING: Some driver ICs did not respond\n");
   // }
-  enablePmic();
-  delay(60000);
-  disablePmic();
+  // powerSwitchEnable();
+  // setGpioLevel_EXPANDER_2(EXP2_EN_NEGATIVE_3_5V, GPIO_HIGH); // -3.5v our DC-DC EN
+  // delay(1000);
+  // setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH); // disable for test only
+  // printf("-3.5\n");
+  // delayms(50);
+  enablePmic(); //debug
+  // delay(60000);
+  delay(10000);
+  // disablePmic();
   // setGpioLevel_EXPANDER_2(EXP2_EN_VIN_SCREEN_3V3, GPIO_LOW);
   delay(2000);
+  // setGpioLevel_EXPANDER_2(EXP2_EN_NEGATIVE_3_5V, GPIO_LOW);
   powerSwitchDisable();
-
+  delay(1000);
   printf("======================================\n\n");
-  // enterDeepSleep();
+  enterDeepSleep();
 }
 void loop()
 {

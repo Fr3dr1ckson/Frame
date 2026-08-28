@@ -366,8 +366,8 @@ void setup()
   // delay(50);
   // expander2.pinMode1(EXP2_EN_1_35V, OUTPUT);
   setGpioLevel_EXPANDER_2(EXP2_EN_VIN_SCREEN_3V3, GPIO_HIGH);
-  delay(50);
-  setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH);
+  // delay(50);
+  // setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH);
   // Serial.println("-3.5v ON MOSFET");
   // Serial.println("5v");
   delay(1000);

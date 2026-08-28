@@ -353,9 +353,12 @@ void powerSwitchEnable(void) // temporary modified in our test PCB setup
     delayms(50);
     setGpioLevel(EXP1_VDDP_EN, GPIO_HIGH); // +19v
     printf("+19\n");
-    delayms(50);
+    delayms(60);
     // setGpioLevel_EXPANDER_2(EXP2_EN_DC19, GPIO_HIGH); // -3.5v from black fix temporary
+    // setGpioLevel_EXPANDER_2(EXP2_EN_NEGATIVE_3_5V, GPIO_HIGH); // -3.5v our DC-DC EN
     setGpioLevel_EXPANDER_2(EXP2_EN_NEGATIVE_3_5V, GPIO_HIGH); // -3.5v our DC-DC EN
+    delayms(50);
+    setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH); // EN for test only
     printf("-3.5\n");
     delayms(50);
     // setGpioLevel(EXP1_VNCP_EN, GPIO_HIGH);
