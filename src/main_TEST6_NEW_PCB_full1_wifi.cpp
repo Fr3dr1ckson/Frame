@@ -12,6 +12,7 @@
 #include "esp_sleep.h"
 #include <WiFi.h>
 #include <Preferences.h>
+#include <WifiCaptive.h>
 
 extern "C"
 {
@@ -457,42 +458,21 @@ void setup()
                 sleepSeconds, sleepSeconds / 60);
 
   // === WIFI START BLOCK ===
-  WiFi.persistent(false); // do not save credentials to NVS — avoids stale state
-  WiFi.disconnect(true);  // clear any state from a previous WiFi.mode() call
-  delay(100);
-  WiFi.begin(IMG_FETCH_WIFI_SSID, IMG_FETCH_WIFI_PASS);
-  Serial.printf("[WIFI] Connecting to %s...\n", IMG_FETCH_WIFI_SSID);
+  // Free test buffers before portal or WiFi stack allocates memory.
+  for (int i = 0; i < numColors; i++) { free(colorBuffers[i]); colorBuffers[i] = nullptr; }
+
+  Serial.println("[WIFI] Trying saved credentials...");
+  if (!WifiCaptivePortal.autoConnect()) {
+    Serial.println("[WIFI] No saved credentials / connection failed");
+    Serial.println("[WIFI] Starting captive portal — connect to SSID 'TRMNL'");
+    if (!WifiCaptivePortal.startPortal()) {
+      Serial.println("[WIFI] Portal failed — going to sleep");
+      goto skip_display;
+    }
+  }
   // === END WIFI START BLOCK ===
 
   // === IMAGE DOWNLOAD BLOCK ===
-  // Free solid-color test buffers so the 2.3 MB section buffers fit in PSRAM.
-  for (int i = 0; i < numColors; i++)
-  {
-    free(colorBuffers[i]);
-    colorBuffers[i] = nullptr;
-  }
-
-  // ── Wait for WiFi (always — needed for both setup and display calls) ────────
-  Serial.printf("[WIFI] Waiting for connection to %s...\n", IMG_FETCH_WIFI_SSID);
-  {
-    uint32_t t0 = millis();
-    uint32_t tPrint = t0;
-    while (WiFi.status() != WL_CONNECTED)
-    {
-      if (millis() - t0 > 30000UL)
-      {
-        Serial.println("[WIFI] timeout");
-        goto skip_display;
-      }
-      if (millis() - tPrint >= 2000UL)
-      {
-        tPrint = millis();
-        Serial.printf("[WIFI] status=%d  elapsed=%lus\n",
-                      (int)WiFi.status(), (millis() - t0) / 1000UL);
-      }
-      delay(250);
-    }
-  }
   Serial.printf("\n[WIFI] Connected — IP: %s  RSSI: %d dBm\n",
                 WiFi.localIP().toString().c_str(), WiFi.RSSI());
   Serial.println("================================================");
